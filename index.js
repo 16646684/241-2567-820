@@ -1,27 +1,17 @@
-function submitData () {
-    let firstNameDOM = document.querySelector('input[name=firstname]')
-    let lastNameDOM = document.querySelector('input[name=lastname]')
-    let ageDOM = document.querySelector('input[name=age]')
-    let genderDOM = document.querySelector('input[name=gender]:checked')
-    let interestDOM = document.querySelectorAll('input[name=interest]:checked')
-    let descriptionDOM = document.querySelector('textarea[name=description]')
-    let interest = ''
+// import http module เพื่อสร้าง server
+const http = require('http');
 
-    for (let i = 0; i < interestDOM.length; i++) {
-              interest += interestDOM[i].value
-              if (i < interestDOM.length - 1) {
-                        interest += ','
-              }
-    }
+const host = 'localhost' // กำหนด host ที่ server 0ะรอรับ request www.example.com
+const port = 8000 // กำหนด port ที่ server รอรับ request ที่เป็น http request
 
-    let userData = {
-              firstname: firstNameDOM.value,
-              lastname: lastNameDOM.value,
-              age: ageDOM.value,
-              gender: genderDOM.value,
-              descriptionDOM: descriptionDOM.value,
-              interest: interest
-    }
-
-    console.log('submitData',userData)
+// กำหนดค่า้ริ่มต้นของ server
+const requestListener = function (req, res) {
+    res.writeHead(200); //ส่ง status code 200 กลับไปให้ client
+    res.end('My first server!');// ส่ง response กลับไปให้ client 
 }
+
+const server = http.createServer(requestListener);//สร้าง server ด้วย http.createServer โดยส่ง requestListener ไปเป็น argument
+server.listen(port, host, () => { // กำหนดให้ server ทำงานที่ port 8000 และ host คือ localhost
+    console.log(`Server is running on http://${host}:${port}`);// แสดงข้อความว่า server กำลังทำงานอยู่ที่ http://localhost:8000
+})
+
