@@ -41,7 +41,21 @@ body{
     background-color: aqua;
     height: 40px;
 }
+.message{
+    margin-top: 20px;
+    padding: 10px;
+    display: none;
+    background-color: lightgray;
 
+}
+.message.success{
+    display: block;
+    background-color: green;
+}
+.message.danger{
+    display: block;
+    background-color: coral;
+}
 @media screen and (max-width: 768px){
     .flex{
         flex-direction: column;

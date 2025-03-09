@@ -1,112 +1,88 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const mysql = require('mysql2/promise');
-const app = express();
-
-app.use(bodyParser.json());
-const port = 8000;
-
-// เก็บ user ที่ส่งมาจาก client
-let users = [];
-
-let conn = null;
-
-/*
-GET /users สำหรับ get ข้อมูล user ทั้งหมด
-POST /user สำหรับสร้าง user ใหม่บันทึกเข้าไป
-GET /user/:id สำหรับ get ข้อมูล user รายคนที่ต้องการ
-*/
-const initmysql = async () => {
-    conn = await mysql.createConnection({
-        host: 'localhost',
-        user:'root',
-        password: 'root',
-        database: 'webdb',
-        port: 8830
-    })
+const validateData = (userData) => {
+    let errors = []
+    if(!userData.firstName) {
+        errors.push('กรุณากรอกชื่อ')
+    }
+    if(!userData.lastName) {
+        errors.push('กรุณากรอกนามสกุล')
+    }
+    if(!userData.age) {
+        errors.push('กรุณากรอกอายุ')
+    }
+    if(!userData.gender) {
+        errors.push('กรุณาเลือกเพศ')
+    }
+    if(!userData.interests) {
+        errors.push('กรุณาเลือกความสนใจ')
+    }
+    if(!userData.description) {
+        errors.push('กรุณากรอกข้อมูลตัวเอง')
+    }
+    return errors
 }
+const submitData = async () => {
+    let firstNameDOM = document.querySelector('input[name=firstname]')
+    let lastNameDOM = document.querySelector('input[name=lastname]')
+    let ageDOM = document.querySelector('input[name=age]')
+    let genderDOM = document.querySelector('input[name=gender]:checked') || {}
+    let interestDOMs = document.querySelectorAll('input[name=interest]:checked')|| {}
+    let descriptionDOM = document.querySelector('textarea[name=description]')
 
-
-/*app.get('/testdb-new', async (req, res) => {
-
-    try {
-        const results = await conn.query('SELECT * FROM users')
-        res.json(results[0]) // ส่งข้อมูลกลับไปที่ results ในรูปแบบ json
-    } catch (error) { 
-        console.log('Erro fetching users:', error.message)
-        res.status(500).json({error:'Error fetching users'})
-        
-    }
-    
-})*/
-
-// path = GET /users
-app.get('/users', async (req, res) => {
-    const results = await conn.query('SELECT * FROM users')
-    res.json(results[0]);
-});
-
-// path = POST /user
-app.post('/users', async (req, res) => {
+    let messageDoM= document.getElementById('message')
     try{
-        let user = req.body;
-    const results = await conn.query('INSERT INTO users SET?',user)
-    console.log('results',results)
-    res.json({
-        message: 'User created',
-        data: results[0]
-    })
-    } catch(error) {
-        console.error('errorMessage',error.Message)
-        res.status(500).json({
-            message:'Something went wrong',
-            errorMessage: error.message
-        }) 
+    
+    let interest = ''
 
-
+    for(let i = 0; i < interestDOMs.length; i++) {
+        interest += interestDOMs[i].value
+        if(i < interestDOMs.length -1){
+            interest += ','
+        }
     }
 
-});
+    let userData ={
+        firstName : firstNameDOM.value,
+        lastName : lastNameDOM.value,
+        age : ageDOM.value,
+        gender : genderDOM.value,
+        description : descriptionDOM.value, 
+        interests : interest
 
-// path = PUT /user/:id
-app.put('/user/:id', (req, res) => {
-    let id = req.params.id;
-    let updateUser = req.body;
-    // หา index ของ user ที่ต้องการแก้ไข
-    let selsctedIndex = users.findIndex(user =>user.id == id )
-    // update user
-    if(updateUser.firstname){
-        users[selsctedIndex].firstname = updateUser.firstname;
     }
+    console.log('submitData',userData)
 
-    if(updateUser.lastname){
-        users[selsctedIndex].lastname = updateUser.lastname;
+    const errors = validateData(userData)
+    if(errors.length > 0) {
+        //มี error
+        throw{
+            message: 'กรุณากรอกข้อมูลให้ครบถ้วน',
+            errors: errors
+        }
     }
     
-
-    res.json({
-        message : "User updated",
-      data:{
-        user : updateUser,
-        indexUpdate : selsctedIndex
-      }
-    });
-});
-
-// path = DELETE /user/:id
-app.delete('/user/:id', (req, res) => {
-    let id = req.params.id;
-    // หา index ของ user ที่ต้องการลบ
-    let selsctedIndex = users.findIndex(user =>user.id == id)
-
-    users.splice(selsctedIndex, 1);   
-    res.json({
-        message : "User deleted",
-        indexDeleted : selsctedIndex
-    });
-});
-
-app.listen(port, async(req, res) => {
-    await initmysql();
-    console.log('Server is running on port' + port);
-});
+        const response = await axios.post('http://localhost:8000/users', userData)
+        console.log('response',response.data)
+        messageDoM.innerText = 'บันทึกข้อมูลเรียบร้อย'
+        messageDoM.className = 'message success'
+    }catch (error){
+        console.log('error message',error.message)
+        console.log('error',error.errors)
+        if (error.response){
+            console.log(error.response)
+            error.message = error.response.data.message
+            error.errors = error.response.data.errors
+        }
+        
+        let htmlData = '<div>'
+        htmlData += `<div>${error.message}</div>`
+        htmlData += '<ul>'
+        for(let i = 0; i < error.errors.length; i++) {
+            htmlData += `<li>${error.errors[i]}</li>`
+        }
+        htmlData += '</ul>'
+        htmlData += '</div>'
+    
+        messageDoM.innerHTML = htmlData
+        messageDoM.className = 'message danger'    
+    }
+}
