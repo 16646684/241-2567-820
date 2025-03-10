@@ -1,3 +1,56 @@
+const BASE_URL = 'http://localhost:8000';
+let mode = 'CREATE'; //default mode
+let selectedId = ''
+
+window.onload = async() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const id = urlParams.get('id')
+    console.log('id',id)
+    if (id) {
+        mode = 'EDIT'
+        selectedId = id
+        //1.ดึงข้อมูล user ที่ต้องการ edit มา
+        try{
+            const response = await axios.get(`${BASE_URL}/users/${id}`)
+            const user = response.data
+            console.log('response',response.data)
+
+    let firstNameDOM = document.querySelector('input[name=firstname]')
+    let lastNameDOM = document.querySelector('input[name=lastname]')
+    let ageDOM = document.querySelector('input[name=age]')
+    let descriptionDOM = document.querySelector('textarea[name=description]')
+
+    let genderDOM = document.querySelectorAll('input[name=gender]') 
+    let interestDOMs = document.querySelectorAll('input[name=interest]')
+    console.log('interrest',user.interest)
+        for(let i = 0; i < interestDOMs.length; i++) {
+            if (genderDOMs[i].value == user.gender) {
+                genderDOMs[i].checked = true
+            }
+        }
+
+        for(let i = 0; i < interestDOMs.length; i++) {
+            if (user.interests.includes(interestDOMs[i].value == user.interests)) {
+                interestDOMs[i].checked = true
+            }
+        }
+    firstNameDOM.value = user.firstname
+    lastNameDOM.value = user.lastname
+    ageDOM.value = user.age
+    descriptionDOM.value = user.description
+    
+
+
+
+        } catch (error) {
+            console.error('error', error)
+        }
+        //2.นำข้อมูลที่ดึงมาไปแสดงใน input
+    }
+
+
+}
+
 const validateData = (userData) => {
     let errors = []
     if(!userData.firstName) {
@@ -59,11 +112,19 @@ const submitData = async () => {
             errors: errors
         }
     }
-    
-        const response = await axios.post('http://localhost:8000/users', userData)
-        console.log('response',response.data)
-        messageDoM.innerText = 'บันทึกข้อมูลเรียบร้อย'
-        messageDoM.className = 'message success'
+    let message = 'บันทึกข้อมูลเรียบร้อย'
+        if (mode == 'CREATE') {
+            const response = await axios.post(`${BASE_URL}/users`, userData)
+            console.log('response',response.data)
+            }else{
+                const response = await axios.put(`${BASE_URL}/users/${selectedId}`, userData)
+                message = 'แก้ไขข้อมูลเรียบร้อย'
+                console.log('response',response.data)
+            }
+                messageDoM.innerText =  message
+                messageDoM.className = 'message success'
+        
+        
     }catch (error){
         console.log('error message',error.message)
         console.log('error',error.errors)
@@ -86,3 +147,4 @@ const submitData = async () => {
         messageDoM.className = 'message danger'    
     }
 }
+
