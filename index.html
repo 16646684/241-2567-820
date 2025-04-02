@@ -1,72 +1,175 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel ="stylesheet" href ="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Form</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: url('black.jpg') no-repeat center center/cover;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      width: 500px;
+      text-align: center;
+    }
+    .header {
+      font-size: 26px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .form-input {
+      text-align: left;
+      margin-bottom: 15px;
+    }
+    .form-input label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 5px;
+    }
+    .form-input input,
+    .form-input textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    /* กำหนดให้ radio-group และ checkbox-group แสดงผลในบรรทัดเดียวกัน */
+    .radio-group,
+    .checkbox-group {
+      display: flex;
+      flex-wrap: nowrap;       /* ไม่ให้ตัดบรรทัด */
+      gap: 15px;
+      white-space: nowrap;     /* ไม่ให้ตัดบรรทัด */
+    }
+    .radio-group label,
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      margin-bottom: 0;
+    }
+    .radio-group input,
+    .checkbox-group input {
+      margin-right: 5px;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    .button {
+      padding: 12px 24px;
+      background: #07a25f;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .button:hover {
+      background: #005f99;
+    }
+    .button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
-    
-        <a href="user.html">go to user management</a>
-        <div class="container">
-        <div class = "header">
-        Register from
+  <div class="container">
+    <div class="header">Register Form</div>
+    <div class="form-input" id="form-content">
+      <label>ชื่อ</label>
+      <input type="text" name="firstname" />
     </div>
-    <div class="flex form-input">
-        <div class ="header-form">ชื่อ</div>
-        <input class = "form" name="firstname" type="text"> 
+    <div class="buttons">
+      <button class="button" id="prev" disabled>← ย้อนกลับ</button>
+      <button class="button" id="next">ถัดไป →</button>
     </div>
-    <div class="flex form-input">
-        <div class ="header-form">นามสกุล</div>
-        <input  class = "form" name="lastname" type="text">
-    </div>
-    <div class="flex form-input">
-        <div class ="header-form">อายุ</div>
-        <input  class = "form" name="age" type="number" min="0" max="150">
-    </div>
-    
-        <div class="flex gender from-input">
-            <div class="header-form">เพศ</div> 
-            <div class = "flex">
-                <div>
-                    <input name= "gender"type="radio" value="ชาย">ชาย
-                </div>
-                <div>
-                    <input name= "gender"type="radio" value="หญิง">หญิง
-                </div>
-                <div>
-                    <input name= "gender" type="radio" value="ไม่ระบุ">ไม่ระบุ
-                </div>
-        </div>
-    </div>
+  </div>
+  <script>
+    let step = 1;
+    const steps = [
+      { label: 'ชื่อ', name: 'firstname' },
+      { label: 'นามสกุล', name: 'lastname' },
+      {
+        label: 'อายุ',
+        name: 'age',
+        type: 'number',
+        extra: `
+          <div class="radio-group">
+            <label>ชาย<input type="radio" name="gender" value="ชาย"></label>
+            <label>หญิง<input type="radio" name="gender" value="หญิง"></label>
+            <label>ไม่ระบุ<input type="radio" name="gender" value="ไม่ระบุ"></label>
+          </div>
+        `,
+      },
+      {
+        label: 'งานอดิเรก',
+        name: 'hobbies',
+        type: 'checkbox',
+        extra: `
+          <div class="checkbox-group">
+            <label>อ่านหนังสือ<input type="checkbox" name="interest" value="อ่านหนังสือ"></label>
+            <label>ดูหนัง<input type="checkbox" name="interest" value="ดูหนัง"></label>
+            <label>ฟังเพลง<input type="checkbox" name="interest" value="ฟังเพลง"></label>
+          </div>
+          <textarea name="description" placeholder="อธิบายตัวเอง"></textarea>
+        `,
+      },
+    ];
 
-    <div class="form-input">
-        งานอดิเรก
-        <div>
-            <input name ="interest" type="checkbox" value="อ่านหนังสือ">อ่านหนังสือ
-        </div>
-        <div>
-            <input name ="interest" type="checkbox" value="ดูหนัง">ดูหนัง
-        </div>
-        <div>
-            <input name ="interest" type="checkbox" value="ฟังเพลง">ฟังเพลง
-        </div>
-    </div>
+    document.getElementById('next').addEventListener('click', () => {
+      if (step < steps.length) {
+        step++;
+        updateForm();
+      }
+    });
 
-    <div class="form-input">
-        คำอธิบายตัวยเอง
-        <textarea name="description"></textarea>
-    </div>
-    <div id="message" class = "message">
-        Hello
-    </div>
-    <div class ="center">
-        <button onclick ="submitData()" class="button">ส่งข้อมูล</button>
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
-<script src="index.js"></script>
+    document.getElementById('prev').addEventListener('click', () => {
+      if (step > 1) {
+        step--;
+        updateForm();
+      }
+    });
 
+    function updateForm() {
+      const formContent = document.getElementById('form-content');
+      formContent.innerHTML = `<label>${steps[step - 1].label}</label>`;
+      if (steps[step - 1].type === 'number') {
+        formContent.innerHTML +=
+          `<input type="number" name="${steps[step - 1].name}" min="0" max="150">` +
+          steps[step - 1].extra;
+      } else if (steps[step - 1].type === 'checkbox') {
+        formContent.innerHTML += steps[step - 1].extra;
+      } else {
+        formContent.innerHTML += `<input type="text" name="${steps[step - 1].name}">`;
+      }
+      document.getElementById('prev').disabled = step === 1;
+      document.getElementById('next').innerHTML =
+        step === steps.length ? 'เสร็จสิ้น' : 'ถัดไป →';
+    }
+  </script>
 </body>
 </html>
